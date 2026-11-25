@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace ChatLan.Core;
 
-// Connexion SORTANTE vers un autre PC (via son mini-serveur SignalR). Elle sert à lui envoyer
-// des messages, des accusés de lecture, "écrit..." et à savoir s'il est en ligne.
-// Chaque PC a donc une connexion sortante vers chacun de ses contacts : le réseau est symétrique.
+// Connexion SORTANTE vers un autre PC
+// des messages, des accusés de lecture, "écrit..." et presence en ligne.
 public sealed class PeerLink
 {
     readonly PeerNode _node;
@@ -29,8 +28,7 @@ public sealed class PeerLink
     }
 
     public void Nudge() => _nudge.TrySetResult();
-
-    // Vidéo : une seule image à la fois en transit par lien. Si le réseau est lent, on saute
+// Vidéo : une seule image à la fois en transit par lien. Si le réseau est lent, on saute
     // des images au lieu de les empiler (sinon l'image prend du retard et l'audio aussi).
     int _videoBusy;
     public bool TryBeginVideo() => Interlocked.CompareExchange(ref _videoBusy, 1, 0) == 0;
@@ -40,15 +38,13 @@ public sealed class PeerLink
     {
         if (Ip.Equals(ip) && Port == port) return;
         Ip = ip; Port = port;
-        // Une connexion qui fonctionne n'est jamais coupée : sur un PC à plusieurs cartes réseau,
-        // la découverte peut annoncer une autre adresse à chaque fois. La nouvelle adresse
-        // servira si la connexion actuelle tombe.
-        if (_connected) return;
+    if (_connected) return;
         Nudge();
     }
 
-    // Coupe la connexion en cours (la boucle se reconnecte ensuite)
-    public void ForceDisconnect()
+     // Coupe la connexion en cours et la boucle se reconnecte ensuite
+
+     public void ForceDisconnect()
     {
         var c = _conn;
         if (c != null) _ = SafeStopAsync(c);
@@ -109,9 +105,8 @@ public sealed class PeerLink
             await Task.WhenAny(Task.Delay(wait, _cts.Token), _nudge.Task);
         }
     }
-
-    // ----- appels vers le PC distant (retournent false en cas d'échec) -----
-    public async Task<bool> TryCallAsync(string method, params object?[] args)
+    // ----- appels vers le PC distant (retournent false en cas d'échec) 
+public async Task<bool> TryCallAsync(string method, params object?[] args)
     {
         var c = _conn;
         if (!_connected || c is null) return false;
@@ -144,3 +139,4 @@ public sealed class PeerLink
         if (c != null) await SafeStopAsync(c);
     }
 }
+
