@@ -1,16 +1,17 @@
-using System.IO;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
+using System.IO; // Bibliotèque pour la manipulation de fichier et dossier
+using System.Security.Cryptography; //Bibliotèque qui permet de sécuriser les mots de passe utilisateurs avec des fonctions cryptographiques
+using System.Text.RegularExpressions; //Bibliotèque qui permet de manipuler des chaines de caractères à l'aide des patterns
+using Microsoft.EntityFrameworkCore;// Bibliotèque qui permet de manipuler la base de donnée à l'aide des objets C# sans a ecrire a main nu les requetes sql
 
 namespace ChatLan.Core;
 
-public class AppDb : DbContext
+public class AppDb: DbContext
 {
     readonly string _path;
-    public AppDb(string path) { _path = path; }
+    public AppDb(string path) {_path = path;}// le constructeur
 
-    public DbSet<ProfileRow> Profiles => Set<ProfileRow>();
+    // attribue de la classe
+    public DbSet<ProfileRow> Profiles => Set<ProfileRow>(); 
     public DbSet<ContactRow> Contacts => Set<ContactRow>();
     public DbSet<MessageRow> Messages => Set<MessageRow>();
     public DbSet<OutboxRow> Outbox => Set<OutboxRow>();
@@ -20,10 +21,11 @@ public class AppDb : DbContext
     public DbSet<StatusViewRow> StatusViews => Set<StatusViewRow>();
     public DbSet<StatusReactionRow> StatusReactions => Set<StatusReactionRow>();
 
-    // Default Timeout = attente en cas de verrou (plusieurs opérations arrivent en même temps)
+    // emplacement où se trouve le fichier .db
     protected override void OnConfiguring(DbContextOptionsBuilder o) =>
         o.UseSqlite("Data Source=" + _path + ";Pooling=False;Default Timeout=30");
-
+    
+    //structure interne et les règles des tables
     protected override void OnModelCreating(ModelBuilder b)
     {
         b.Entity<ProfileRow>().HasKey(x => x.Id);
@@ -40,8 +42,6 @@ public class AppDb : DbContext
     }
 }
 
-// Met la base au niveau 2 : EnsureCreated ne touche pas une base déjà existante,
-// on ajoute donc les colonnes et les tables manquantes à la main (comptes du Niveau 1 conservés).
 public static class Schema
 {
     public static void Ensure(AppDb db)
@@ -121,6 +121,7 @@ public static class Schema
         catch { }
     }
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
 public static class Pwd
 {
