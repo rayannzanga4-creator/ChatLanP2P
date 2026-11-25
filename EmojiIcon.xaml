@@ -1,0 +1,10 @@
+<UserControl x:Class="ChatLan.Controls.EmojiIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="False" IsHitTestVisible="False" SnapsToDevicePixels="True">
+    <Grid x:Name="Host">
+        <Image x:Name="Pic" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" />
+        <TextBlock x:Name="Fallback" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontFamily="Segoe UI Emoji" Visibility="Collapsed" />
+    </Grid>
+</UserControl>
