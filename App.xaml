@@ -1,9 +1,18 @@
-﻿<Application x:Class="ChatLan.App"
+<Application x:Class="ChatLan.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ChatLan"
+             xmlns:svc="clr-namespace:ChatLan.Services"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Theme.Dark.xaml" />
+                <ResourceDictionary Source="Themes/Icons.xaml" />
+                <ResourceDictionary Source="Themes/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolVis" />
+            <svc:InvVis x:Key="InvVis" />
+            <svc:InvBool x:Key="InvBool" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
