@@ -1,8 +1,5 @@
-namespace ChatLan.Core;
+//  Tables de la base SQLite locale
 
-// ---------------------------------------------------------------------------
-//  Tables de la base SQLite locale (une base par profil)
-// ---------------------------------------------------------------------------
 public class ProfileRow
 {
     public int Id { get; set; } = 1;
@@ -16,7 +13,7 @@ public class ProfileRow
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
-// Un contact OU un groupe (IsGroup). Pour un groupe, PeerId vaut "g-<identifiant>".
+// Un contact OU un groupe (IsGroup)
 public class ContactRow
 {
     public string PeerId { get; set; } = "";
@@ -32,20 +29,21 @@ public class ContactRow
     public bool IsGroup { get; set; }
 }
 
+
 public class MessageRow
 {
     public int Id { get; set; }
-    public string Uid { get; set; } = "";             // identifiant global du message (créé par l'expéditeur)
+    public string Uid { get; set; } = "";             // identifiant global du message
     public string ContactId { get; set; } = "";       // contact ou groupe de la conversation
     public bool FromMe { get; set; }
-    public string Text { get; set; } = "";            // texte (ou légende d'un média)
+    public string Text { get; set; } = "";            // texte (légende d'un média)
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public int Status { get; set; }                   // 0 = en attente / envoyé, 1 = reçu, 2 = lu
     public bool Deleted { get; set; }                 // supprimé pour tous
     public bool ReadLocally { get; set; }             // message reçu et lu par moi
 
-    // --- Niveau 2 ---
+    //------------------------------------------
     public string Kind { get; set; } = "text";        // text | image | video | voice | audio | file | sticker
     public string MediaId { get; set; } = "";         // nom du fichier dans le dossier média local
     public string MediaName { get; set; } = "";       // nom d'origine (document)
@@ -62,6 +60,7 @@ public class MessageRow
 }
 
 // Actions à transmettre dès que le destinataire est de nouveau joignable
+
 public class OutboxRow
 {
     public int Id { get; set; }
@@ -70,7 +69,8 @@ public class OutboxRow
     public string Payload { get; set; } = "";
 }
 
-// Membres d'un groupe (avec les droits d'administrateur)
+// Membres d'un groupe
+
 public class GroupMemberRow
 {
     public int Id { get; set; }
@@ -89,8 +89,7 @@ public class ReactionRow
     public string AuthorPeerId { get; set; } = "";
     public string Emoji { get; set; } = "";
 }
-
-// Statut ("story") : publication éphémère de 24 h, texte / image / vidéo
+// Statut (story) : publication éphémère de 24 h, texte / image / vidéo
 public class StatusRow
 {
     public string Id { get; set; } = "";
@@ -110,8 +109,7 @@ public class StatusRow
     public bool Deleted { get; set; }
     public bool FromMe { get; set; }
 }
-
-// Qui a consulté un statut (chez l'auteur)
+//status consulté
 public class StatusViewRow
 {
     public int Id { get; set; }
@@ -120,7 +118,6 @@ public class StatusViewRow
     public string ViewerName { get; set; } = "";
     public DateTime At { get; set; } = DateTime.UtcNow;
 }
-
 // Réactions à un statut
 public class StatusReactionRow
 {
@@ -130,9 +127,8 @@ public class StatusReactionRow
     public string Emoji { get; set; } = "";
 }
 
-// ---------------------------------------------------------------------------
 //  Messages échangés entre les PC
-// ---------------------------------------------------------------------------
+
 public record PeerInfoDto(string PeerId, string Username, string DisplayName, string About,
                           bool HasAvatar, int AvatarVersion, int Port);
 
@@ -183,7 +179,6 @@ public static class Kind
 
     public static bool IsMedia(string kind) => kind != Text && kind != Sticker;
 }
-
 // Aperçu d'un message dans la liste des discussions
 public static class MsgPreview
 {

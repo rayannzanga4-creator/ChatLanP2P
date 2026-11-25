@@ -3,9 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace ChatLan.Core;
 
-// Stockage local des pièces jointes : %AppData%\ChatLan\media\<identifiant>.<ext>
-// Un média est envoyé par le réseau via le mini-serveur HTTP de l'expéditeur (GET /media/<id>),
-// puis recopié chez le destinataire : chaque PC garde sa propre copie.
+// Stockage local des pièces jointes
+// Un média est envoyé par le réseau via le mini-serveur HTTP de l'expéditeur
+// puis recopié chez le destinataire : chaque PC garde sa propre copie
 public static class MediaStore
 {
     public static readonly string Dir = Path.Combine(
@@ -29,7 +29,7 @@ public static class MediaStore
     }
 
     // Copie un fichier choisi par l'utilisateur dans le magasin local
-    public static (string Id, long Size) Import(string sourcePath)
+public static (string Id, long Size) Import(string sourcePath)
     {
         EnsureDir();
         var info = new FileInfo(sourcePath);
@@ -52,8 +52,6 @@ public static class MediaStore
         try { return Exists(id) ? File.ReadAllBytes(PathOf(id)) : null; }
         catch { return null; }
     }
-
-    // ---------------------------------------------------------------- types
     public static string MimeOf(string fileName)
     {
         var ext = Path.GetExtension(fileName).TrimStart('.').ToLowerInvariant();

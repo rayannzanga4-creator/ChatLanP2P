@@ -1,8 +1,8 @@
 using NAudio.Wave;
 
 namespace ChatLan.Core;
+// Enregistreur de messages vocaux 
 
-// Enregistreur de messages vocaux : micro -> fichier WAV (16 kHz, mono, 16 bits)
 public sealed class VoiceRecorder : IDisposable
 {
     WaveInEvent? _mic;
@@ -56,9 +56,9 @@ public sealed class VoiceRecorder : IDisposable
         try { lock (_lock) _writer?.Write(e.Buffer, 0, e.BytesRecorded); }
         catch { }
     }
+       // Termine l'enregistrement et rend le fichier WAV prêt à envoyer
 
-    // Termine l'enregistrement et rend le fichier WAV prêt à envoyer
-    public (string Path, int DurationMs, long Size)? Stop()
+       public (string Path, int DurationMs, long Size)? Stop()
     {
         lock (_lock)
         {
@@ -73,6 +73,7 @@ public sealed class VoiceRecorder : IDisposable
         }
     }
 
+    
     public void Cancel()
     {
         lock (_lock)

@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace ChatLan.Core;
 
-// Mini-serveur de CE PC : les autres PC s'y connectent pour m'envoyer des messages.
-// Un appel n'est accepté qu'après "Hello" (la connexion est alors associée à un PeerId).
 public class PeerHub : Hub
 {
     private readonly PeerNode _node;

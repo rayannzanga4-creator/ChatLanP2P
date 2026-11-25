@@ -1,13 +1,12 @@
-using System.Diagnostics;
-using NAudio.Wave;
-using OpenCvSharp;
+using System.Diagnostics;// C'est l'outil de diagnostic
+using NAudio.Wave; //Bibliothèque externe pour le son
+using OpenCvSharp; //Bibliothèque externe pour la caméra et la vidéo
 
 namespace ChatLan.Core;
 
-public enum CallPhase { Idle, Ringing, Active }
+public enum CallPhase { Idle, Ringing, Active } //ici on crée notre propre type de variable
 
-// Un participant d'un appel (moi ou un autre PC)
-public sealed class CallPeer
+public sealed class CallPeer // on a scellé cette class elle n'est pas héritable
 {
     public string PeerId { get; init; } = "";
     public string Name { get; init; } = "";
@@ -17,13 +16,8 @@ public sealed class CallPeer
     public int FrameVersion { get; set; }
 }
 
-// ===========================================================================
-//  Appels audio / vidéo / de groupe, en pair-à-pair (aucun serveur).
-//  - audio : micro 16 kHz mono -> SignalR -> haut-parleur (NAudio)
-//  - vidéo : caméra -> JPEG 320x240 -> SignalR (OpenCV)
-//  - groupe : étoile. Le lanceur diffuse vers les participants et relaie
-//    ce qu'il reçoit, chaque participant n'envoie qu'au lanceur.
-// ===========================================================================
+//Appels audio / vidéo / de groupe, en pair-à-pair 
+//  - audio : micro 16 kHz mono -> SignalR -> haut-parleur (NAudio ) vidéo : caméra -> JPEG 320x240 -> SignalR (OpenCV) avec groupe
 public sealed class CallManager : IDisposable
 {
     public const int SampleRate = 16000;

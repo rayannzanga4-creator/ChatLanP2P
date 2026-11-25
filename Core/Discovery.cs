@@ -5,8 +5,7 @@ using System.Text;
 using System.Text.Json;
 
 namespace ChatLan.Core;
-
-// Découverte des autres PC du réseau local : annonces UDP en diffusion (broadcast), sans serveur ni internet.
+// Découverte des autres appareils du reseau local via unscan UDP en diffusion (Broadcast)
 public sealed class Discovery
 {
     public const int UdpPort = 45454;
@@ -45,7 +44,7 @@ public sealed class Discovery
         }
         catch
         {
-            // Le port UDP est indisponible : la connexion manuelle par adresse reste possible
+            // Le port UDP est indisponible : la connexion manuelle par adresse reste toujours possible
             Running = false;
         }
     }
@@ -124,8 +123,8 @@ public sealed class Discovery
         catch { }
     }
 
-    // Adresses de diffusion de toutes les cartes réseau actives (ex. 192.168.1.255)
-    static List<IPAddress> BroadcastAddresses()
+// Adresses de diffusion de toutes les cartes réseau actives
+static List<IPAddress> BroadcastAddresses()
     {
         var list = new List<IPAddress> { IPAddress.Broadcast };
         try
@@ -149,7 +148,7 @@ public sealed class Discovery
         return list;
     }
 
-    // Adresses IPv4 de ce PC (affichées dans le profil pour le diagnostic)
+    // Adresses ipv4 du PC (affichées dans le profil pour le diagnostic)
     public static List<string> LocalAddresses()
     {
         var list = new List<string>();
