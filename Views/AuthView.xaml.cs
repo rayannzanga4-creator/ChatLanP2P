@@ -1,10 +1,16 @@
 using System.Windows;
+using System.Windows.Controls;
+using ChatLan.ViewModels;
 
-[assembly:ThemeInfo(
-    ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located
-                                                //(used if a resource is not found in the page,
-                                                // or application resource dictionaries)
-    ResourceDictionaryLocation.SourceAssembly   //where the generic resource dictionary is located
-                                                //(used if a resource is not found in the page,
-                                                // app, or any theme specific resource dictionaries)
-)]
+namespace ChatLan.Views;
+
+public partial class AuthView : UserControl
+{
+    public AuthView()
+    {
+        InitializeComponent();
+        PasswordBox.PasswordChanged += (_, _) => { if (DataContext is AuthViewModel vm) vm.Password = PasswordBox.Password; };
+        ConfirmBox.PasswordChanged += (_, _) => { if (DataContext is AuthViewModel vm) vm.Confirm = ConfirmBox.Password; };
+        Loaded += (_, _) => UsernameBox.Focus();
+    }
+}
