@@ -1,0 +1,132 @@
+<UserControl x:Class="ChatLan.Views.CallView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:ChatLan.Controls"
+             xmlns:vm="clr-namespace:ChatLan.ViewModels">
+    <UserControl.Resources>
+        <Style x:Key="RoundCallButton" TargetType="Button">
+            <Setter Property="Width" Value="58" />
+            <Setter Property="Height" Value="58" />
+            <Setter Property="Background" Value="{DynamicResource CallTile}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="29">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.85" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.7" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource CallBackground}" Visibility="{Binding ShowCall, Converter={StaticResource BoolVis}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- en-tête -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,34,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Path Data="{StaticResource IconCommunities}" Width="18" Height="18" Stretch="Uniform" Fill="#8FFFFFFF"
+                      VerticalAlignment="Center" Margin="0,0,8,0"
+                      Visibility="{Binding CallIsGroup, Converter={StaticResource BoolVis}}" />
+                <TextBlock Text="{Binding CallTitle}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF"
+                           TextTrimming="CharacterEllipsis" MaxWidth="520" HorizontalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Text="{Binding CallStatus}" FontSize="14.5" Foreground="#B8FFFFFF" HorizontalAlignment="Center" Margin="0,6,0,0" />
+            <TextBlock Text="{Binding CallNote}" FontSize="12.5" Foreground="#FFD479" HorizontalAlignment="Center" Margin="0,6,0,0"
+                       TextWrapping="Wrap" MaxWidth="520" TextAlignment="Center" />
+        </StackPanel>
+
+        <!-- participants -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,18,0,0">
+            <ItemsControl ItemsSource="{Binding CallParticipants}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:CallPeerItem}">
+                        <Border Width="236" Height="176" Margin="8" CornerRadius="18" Background="{DynamicResource CallTile}"
+                                BorderBrush="#22FFFFFF" BorderThickness="1">
+                            <Grid>
+                                <Image Source="{Binding FrameSource}" Stretch="UniformToFill" />
+                                <c:AvatarControl Size="82" Label="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                 Visibility="{Binding HasFrame, Converter={StaticResource InvVis}}" />
+                                <Border VerticalAlignment="Bottom" Background="#99000000" CornerRadius="0,0,17,17" Padding="12,7">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Name}" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="13"
+                                                   TextTrimming="CharacterEllipsis" MaxWidth="150" />
+                                        <TextBlock Text="{Binding StatusText}" Foreground="#B0FFFFFF" FontSize="11.5" Margin="8,2,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- commandes -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,40"
+                    Visibility="{Binding CallIncoming, Converter={StaticResource InvVis}}">
+            <Button Style="{StaticResource RoundCallButton}" Command="{Binding ToggleMuteCallCommand}" ToolTip="Micro">
+                <Grid>
+                    <Path Data="{StaticResource IconMic}" Width="24" Height="24" Stretch="Uniform" Fill="#FFFFFF"
+                          Visibility="{Binding CallMuted, Converter={StaticResource InvVis}}" />
+                    <Path Data="{StaticResource IconMicOff}" Width="24" Height="24" Stretch="Uniform" Fill="{DynamicResource RecordRed}"
+                          Visibility="{Binding CallMuted, Converter={StaticResource BoolVis}}" />
+                </Grid>
+            </Button>
+            <Button Style="{StaticResource RoundCallButton}" Margin="16,0" Command="{Binding ToggleCameraCallCommand}" ToolTip="Caméra"
+                    Visibility="{Binding CallVideo, Converter={StaticResource BoolVis}}">
+                <Grid>
+                    <Path Data="{StaticResource IconVideo}" Width="24" Height="24" Stretch="Uniform" Fill="#FFFFFF"
+                          Visibility="{Binding CallCameraOn, Converter={StaticResource BoolVis}}" />
+                    <Path Data="{StaticResource IconVideoOff}" Width="24" Height="24" Stretch="Uniform" Fill="#B0FFFFFF"
+                          Visibility="{Binding CallCameraOn, Converter={StaticResource InvVis}}" />
+                </Grid>
+            </Button>
+            <Button Style="{StaticResource RoundCallButton}" Background="{DynamicResource Danger}" Command="{Binding HangupCallCommand}"
+                    ToolTip="Raccrocher">
+                <Path Data="{StaticResource IconPhone}" Width="24" Height="24" Stretch="Uniform" Fill="#FFFFFF">
+                    <Path.RenderTransform>
+                        <RotateTransform Angle="135" CenterX="12" CenterY="12" />
+                    </Path.RenderTransform>
+                </Path>
+            </Button>
+        </StackPanel>
+
+        <!-- appel entrant -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,40"
+                    Visibility="{Binding CallIncoming, Converter={StaticResource BoolVis}}">
+            <Button Style="{StaticResource RoundCallButton}" Background="{DynamicResource Danger}" Width="64" Height="64"
+                    Command="{Binding DeclineCallCommand}" ToolTip="Refuser">
+                <Path Data="{StaticResource IconPhone}" Width="26" Height="26" Stretch="Uniform" Fill="#FFFFFF">
+                    <Path.RenderTransform>
+                        <RotateTransform Angle="135" CenterX="13" CenterY="13" />
+                    </Path.RenderTransform>
+                </Path>
+            </Button>
+            <Button Style="{StaticResource RoundCallButton}" Background="{DynamicResource Online}" Width="64" Height="64"
+                    Margin="40,0,0,0" Command="{Binding AnswerCallCommand}" ToolTip="Répondre">
+                <Path Data="{StaticResource IconPhone}" Width="26" Height="26" Stretch="Uniform" Fill="#FFFFFF" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
