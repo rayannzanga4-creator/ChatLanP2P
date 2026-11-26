@@ -1,0 +1,61 @@
+<UserControl x:Class="ChatLan.Views.GroupCreateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:ChatLan.Controls"
+             xmlns:vm="clr-namespace:ChatLan.ViewModels">
+    <Grid Background="{DynamicResource Backdrop}" Visibility="{Binding ShowNewGroup, Converter={StaticResource BoolVis}}">
+        <Border Style="{StaticResource SheetCard}" Width="430" MaxHeight="600" Padding="26,22,26,20" VerticalAlignment="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,18">
+                    <Border Width="40" Height="40" CornerRadius="20" Background="{DynamicResource AccentGradient}">
+                        <Path Data="{StaticResource IconCommunities}" Fill="#FFFFFF" Width="20" Height="20" Stretch="Uniform" />
+                    </Border>
+                    <TextBlock Text="Nouveau groupe" FontSize="21" FontWeight="Bold" VerticalAlignment="Center" Margin="12,0,0,0" />
+                </StackPanel>
+
+                <TextBlock Grid.Row="1" Text="Nom du groupe" Style="{StaticResource FieldLabel}" />
+                <Border Grid.Row="2" Style="{StaticResource FieldBorder}">
+                    <TextBox Style="{StaticResource FlatBox}" MaxLength="40" Tag="Ex. Équipe projet"
+                             Text="{Binding NewGroupName, UpdateSourceTrigger=PropertyChanged}" />
+                </Border>
+
+                <Grid Grid.Row="3" Margin="0,4,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Participants" Style="{StaticResource FieldLabel}" />
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="300">
+                        <ItemsControl ItemsSource="{Binding GroupPicks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:ContactChoice}">
+                                    <CheckBox Style="{StaticResource ChoiceCheck}" IsChecked="{Binding IsSelected, Mode=TwoWay}" Margin="0,1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <c:AvatarControl Size="34" Label="{Binding Name}" Photo="{Binding Photo}" />
+                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                        </StackPanel>
+                                    </CheckBox>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+
+                <Grid Grid.Row="4" Margin="0,16,0,0">
+                    <Button Style="{StaticResource SecondaryButton}" Content="Annuler" Command="{Binding CloseNewGroupCommand}"
+                            HorizontalAlignment="Left" Padding="22,10" />
+                    <Button Style="{StaticResource PrimaryButton}" Content="Créer le groupe" Command="{Binding CreateGroupCommand}"
+                            HorizontalAlignment="Right" Padding="22,11" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

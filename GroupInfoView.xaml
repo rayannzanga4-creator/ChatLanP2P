@@ -1,0 +1,139 @@
+<UserControl x:Class="ChatLan.Views.GroupInfoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:ChatLan.Controls"
+             xmlns:vm="clr-namespace:ChatLan.ViewModels">
+    <Grid Background="{DynamicResource Backdrop}" Visibility="{Binding ShowGroupInfo, Converter={StaticResource BoolVis}}">
+        <Border Style="{StaticResource SheetCard}" Width="460" MaxHeight="640" Padding="24,20,24,18" VerticalAlignment="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,16">
+                    <Border Width="42" Height="42" CornerRadius="21" Background="{DynamicResource AccentGradient}">
+                        <Path Data="{StaticResource IconCommunities}" Fill="#FFFFFF" Width="21" Height="21" Stretch="Uniform" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" Margin="12,0,0,0">
+                        <TextBlock Text="{Binding GroupTitle}" FontSize="19" FontWeight="Bold" TextTrimming="CharacterEllipsis" MaxWidth="270" />
+                        <TextBlock Text="Gestion des membres" FontSize="12.5" Foreground="{DynamicResource TextSecondary}" />
+                    </StackPanel>
+                    <Button Style="{StaticResource SmallIconButton}" HorizontalAlignment="Right" Margin="0,0,-4,0"
+                            Command="{Binding CloseGroupInfoCommand}" ToolTip="Fermer">
+                        <Path Data="{StaticResource IconClose}" Style="{StaticResource Icon16}" />
+                    </Button>
+                </StackPanel>
+
+                <!-- ajout de membres -->
+                <StackPanel Grid.Row="1">
+                    <Button Style="{StaticResource SecondaryButton}" Content="Ajouter des membres" Padding="18,9"
+                            HorizontalAlignment="Left" Margin="0,0,0,8" Command="{Binding ToggleAddMembersCommand}"
+                            Visibility="{Binding IAmGroupAdmin, Converter={StaticResource BoolVis}}" />
+                    <Border Background="{DynamicResource BgElevated}" BorderBrush="{DynamicResource Border}" BorderThickness="1"
+                            CornerRadius="16" Padding="8" Margin="0,0,0,10"
+                            Visibility="{Binding AddingMembers, Converter={StaticResource BoolVis}}">
+                        <StackPanel>
+                            <ScrollViewer MaxHeight="170" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding AddMemberPicks}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:ContactChoice}">
+                                            <CheckBox Style="{StaticResource ChoiceCheck}" IsChecked="{Binding IsSelected, Mode=TwoWay}" Margin="0,1">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <c:AvatarControl Size="30" Label="{Binding Name}" Photo="{Binding Photo}" />
+                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                                </StackPanel>
+                                            </CheckBox>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <Button Style="{StaticResource PrimaryButton}" Content="Ajouter au groupe" Padding="16,9" Margin="0,8,0,0"
+                                    Command="{Binding AddSelectedMembersCommand}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- liste des membres -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding GroupMembers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:GroupMemberItem}">
+                                <Grid Margin="0,3">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <c:AvatarControl Size="40" Label="{Binding Name}" ShowOnline="{Binding Online}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="215" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource MiniPill}" Margin="0,2,0,0"
+                                                    Background="{DynamicResource AccentSoft}"
+                                                    Visibility="{Binding IsAdmin, Converter={StaticResource BoolVis}}">
+                                                <TextBlock Text="admin" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" />
+                                            </Border>
+                                            <TextBlock Text="{Binding RoleText}" FontSize="11.5" Margin="6,2,0,0"
+                                                       Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="2" ToolTip="Nommer administrateur"
+                                            Command="{Binding DataContext.ToggleAdminCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource SmallIconButton}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMe}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsAdmin}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding DataContext.IAmGroupAdmin, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <Path Data="{StaticResource IconStar}" Style="{StaticResource Icon16}" Fill="{DynamicResource AccentText}" />
+                                    </Button>
+
+                                    <Button Grid.Column="3" ToolTip="Retirer du groupe"
+                                            Command="{Binding DataContext.RemoveMemberCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource SmallIconButton}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMe}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding DataContext.IAmGroupAdmin, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <Path Data="{StaticResource IconTrash}" Style="{StaticResource Icon16}" Fill="{DynamicResource Danger}" />
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <Grid Grid.Row="3" Margin="0,14,0,0">
+                    <Button Style="{StaticResource DangerTextButton}" Content="Quitter le groupe" Command="{Binding LeaveGroupCommand}"
+                            HorizontalAlignment="Left" />
+                    <Button Style="{StaticResource SecondaryButton}" Content="Fermer" Command="{Binding CloseGroupInfoCommand}"
+                            HorizontalAlignment="Right" Padding="20,9" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,262 @@
+<UserControl x:Class="ChatLan.Views.StatusViewerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:ChatLan.Controls"
+             xmlns:vm="clr-namespace:ChatLan.ViewModels">
+    <Grid Background="{DynamicResource Backdrop}" Visibility="{Binding ShowStatusViewer, Converter={StaticResource BoolVis}}">
+        <Border Width="430" MaxHeight="760" CornerRadius="26" Background="#0D1220" BorderBrush="#26FFFFFF"
+                BorderThickness="1" Padding="16" VerticalAlignment="Center" ClipToBounds="True">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="40" ShadowDepth="10" Opacity="0.5" />
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- en-tête -->
+                <Grid Grid.Row="0" Margin="2,0,2,10">
+                    <StackPanel Orientation="Horizontal">
+                        <c:AvatarControl Size="34" Label="{Binding StatusGroup.Name}" Photo="{Binding StatusGroup.Photo}" />
+                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding StatusGroup.Name}" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="14" />
+                            <TextBlock Text="{Binding CurrentStatus.TimeText}" Foreground="#99FFFFFF" FontSize="11.5" />
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Style="{StaticResource BareButton}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Width="30" Height="30" Command="{Binding CloseStatusCommand}" ToolTip="Fermer">
+                        <Path Data="{StaticResource IconClose}" Fill="#FFFFFF" Width="15" Height="15" Stretch="Uniform" />
+                    </Button>
+                </Grid>
+
+                <!-- segments de progression -->
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding StatusSegments}" Margin="0,0,0,10">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:StatusSegment}">
+                            <Border Height="3" CornerRadius="2" Margin="2,0">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#33FFFFFF" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Done}" Value="True">
+                                                <Setter Property="Background" Value="#FFFFFF" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Active}" Value="True">
+                                                <Setter Property="Background" Value="#FFFFFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- contenu du statut -->
+                <Grid Grid.Row="2" Height="380" ClipToBounds="True" DataContext="{Binding CurrentStatus}">
+                    <!-- texte -->
+                    <Border Background="{Binding BackgroundBrush}" CornerRadius="16" Padding="22"
+                            Visibility="{Binding IsText, Converter={StaticResource BoolVis}}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <c:EmojiTextBlock EmojiText="{Binding Text}" Foreground="#FFFFFF" FontSize="21"
+                                              TextAlignment="Center" TextWrapping="Wrap"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- image -->
+                    <Border Background="#10151F" CornerRadius="16" ClipToBounds="True"
+                            Visibility="{Binding HasPicture, Converter={StaticResource BoolVis}}">
+                        <Image Source="{Binding Photo}" Stretch="Uniform" />
+                    </Border>
+
+                    <!-- vidéo -->
+                    <Border Background="#161C2C" CornerRadius="16" Visibility="{Binding IsVideo, Converter={StaticResource BoolVis}}">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="18">
+                            <Path Data="{StaticResource IconPlay}" Fill="#FFFFFF" Width="52" Height="52" Stretch="Uniform" />
+                            <TextBlock Text="{Binding MediaName}" Foreground="#CCFFFFFF" Margin="0,12,0,0" FontSize="12.5"
+                                       TextTrimming="CharacterEllipsis" MaxWidth="280" HorizontalAlignment="Center" />
+                            <Button Style="{StaticResource TextButton}" Content="Ouvrir la vidéo" Foreground="#7FE3C0" Margin="0,4,0,0"
+                                    Command="{Binding DataContext.OpenStatusMediaCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- média non téléchargé -->
+                    <Border Background="#161C2C" CornerRadius="16"
+                            Visibility="{Binding MediaMissing, Converter={StaticResource BoolVis}}">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Média non téléchargé" Foreground="#FFFFFF" HorizontalAlignment="Center" FontSize="13.5" />
+                            <Button Style="{StaticResource TextButton}" Content="Télécharger" Foreground="#7FE3C0" Margin="0,6,0,0"
+                                    Command="{Binding DataContext.OpenStatusMediaCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- navigation -->
+                    <Button Style="{StaticResource BareButton}" Width="46" HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Height="46" Command="{Binding DataContext.PreviousStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            ToolTip="Précédent" Opacity="0.4">
+                        <Path Data="{StaticResource IconBack}" Fill="#FFFFFF" Width="20" Height="20" Stretch="Uniform" />
+                    </Button>
+                    <Button Style="{StaticResource BareButton}" Width="46" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Height="46" Command="{Binding DataContext.NextStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            ToolTip="Suivant" Opacity="0.4">
+                        <Path Data="{StaticResource IconBack}" Fill="#FFFFFF" Width="20" Height="20" Stretch="Uniform"
+                              RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform><ScaleTransform ScaleX="-1" /></Path.RenderTransform>
+                        </Path>
+                    </Button>
+                </Grid>
+
+                <!-- légende -->
+                <c:EmojiTextBlock Grid.Row="3" EmojiText="{Binding CurrentStatus.Caption}" Foreground="#EEFFFFFF"
+                                  FontSize="14" TextWrapping="Wrap" Margin="4,12,4,0"
+                                  Visibility="{Binding CurrentStatus.HasCaption, Converter={StaticResource BoolVis}}" />
+
+                <!-- réactions reçues -->
+                <ItemsControl Grid.Row="4" ItemsSource="{Binding CurrentStatus.Reactions}" Margin="2,10,2,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#1FFFFFFF" CornerRadius="11" Padding="8,3" Margin="0,0,6,4">
+                                <StackPanel Orientation="Horizontal">
+                                    <c:EmojiIcon Emoji="{Binding Emoji}" Size="14" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding CountText}" Foreground="#CCFFFFFF" FontSize="11.5"
+                                               Margin="4,0,0,0" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- réagir -->
+                <ItemsControl Grid.Row="5" ItemsSource="{Binding StatusEmojis}" Margin="0,4,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource BareButton}" Height="34"
+                                    Command="{Binding DataContext.ReactStatusCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}" ToolTip="Réagir">
+                                <c:EmojiIcon Emoji="{Binding}" Size="21" />
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- répondre + actions -->
+                <StackPanel Grid.Row="6" Margin="0,8,0,0">
+                    <Grid Visibility="{Binding StatusGroup.IsMine, Converter={StaticResource InvVis}}">
+                        <Border Background="#1AFFFFFF" CornerRadius="20">
+                            <Grid>
+                                <TextBox Text="{Binding StatusReply, UpdateSourceTrigger=PropertyChanged}" Background="Transparent"
+                                         Foreground="#FFFFFF" BorderThickness="0" CaretBrush="#FFFFFF" Padding="14,9,46,9"
+                                         VerticalContentAlignment="Center" MaxLength="1000"
+                                         PreviewKeyDown="Reply_PreviewKeyDown"
+                                         Tag="Répondre à ce statut…" />
+                                <Button Style="{StaticResource BareButton}" Width="34" Height="34" HorizontalAlignment="Right"
+                                        Margin="0,0,4,0" Command="{Binding SendStatusReplyCommand}" ToolTip="Envoyer">
+                                    <Path Data="{StaticResource IconSend}" Fill="#7FE3C0" Width="17" Height="17" Stretch="Uniform" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <Grid Margin="0,10,0,0">
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding StatusGroup.IsMine, Converter={StaticResource BoolVis}}">
+                            <Button Style="{StaticResource TextButton}" Padding="0" Foreground="#7FE3C0"
+                                    Command="{Binding ToggleStatusViewersCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="👁" FontFamily="Segoe UI Emoji" Margin="0,0,6,0" />
+                                    <TextBlock Text="{Binding CurrentStatus.ViewsText}" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource TextButton}" Content="Supprimer" Foreground="#FF8A80" Margin="18,0,0,0"
+                                    Command="{Binding DeleteCurrentStatusCommand}" />
+                        </StackPanel>
+                        <Button Style="{StaticResource TextButton}" Content="Partager…" Padding="0" Foreground="#7FE3C0"
+                                HorizontalAlignment="Right" Command="{Binding ToggleStatusShareCommand}" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- qui a vu -->
+                <Border Grid.RowSpan="7" Panel.ZIndex="10" Background="#0D1220" CornerRadius="18" Padding="16"
+                        Visibility="{Binding ShowStatusViewers, Converter={StaticResource BoolVis}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid Margin="0,0,0,10">
+                            <TextBlock Text="Qui a vu ce statut" Foreground="#FFFFFF" FontSize="16" FontWeight="SemiBold" />
+                            <Button Style="{StaticResource BareButton}" HorizontalAlignment="Right" Width="28" Height="28"
+                                    Command="{Binding ToggleStatusViewersCommand}">
+                                <Path Data="{StaticResource IconClose}" Fill="#FFFFFF" Width="14" Height="14" Stretch="Uniform" />
+                            </Button>
+                        </Grid>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding StatusViewerList}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:StatusViewer}">
+                                        <StackPanel Orientation="Horizontal" Margin="0,4">
+                                            <c:AvatarControl Size="30" Label="{Binding Name}" />
+                                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" Foreground="#FFFFFF" FontSize="13.5" />
+                                                <TextBlock Text="{Binding When}" Foreground="#88FFFFFF" FontSize="11" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <!-- partager -->
+                <Border Grid.RowSpan="7" Panel.ZIndex="10" Background="#0D1220" CornerRadius="18" Padding="16"
+                        Visibility="{Binding ShowStatusShare, Converter={StaticResource BoolVis}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid Margin="0,0,0,10">
+                            <TextBlock Text="Partager avec" Foreground="#FFFFFF" FontSize="16" FontWeight="SemiBold" />
+                            <Button Style="{StaticResource BareButton}" HorizontalAlignment="Right" Width="28" Height="28"
+                                    Command="{Binding ToggleStatusShareCommand}">
+                                <Path Data="{StaticResource IconClose}" Fill="#FFFFFF" Width="14" Height="14" Stretch="Uniform" />
+                            </Button>
+                        </Grid>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding StatusShareTargets}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:ConversationItem}">
+                                        <Button Style="{StaticResource BareButton}" HorizontalContentAlignment="Left" Margin="0,2"
+                                                Command="{Binding DataContext.ShareStatusToCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}">
+                                            <StackPanel Orientation="Horizontal" Margin="0,4">
+                                                <c:AvatarControl Size="32" Label="{Binding Name}" Photo="{Binding Photo}" />
+                                                <TextBlock Text="{Binding Name}" Foreground="#FFFFFF" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
